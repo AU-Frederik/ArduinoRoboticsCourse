@@ -14,6 +14,13 @@ unsigned long startMillis;  //some global variables available anywhere in the pr
 unsigned long currentMillis;
 const unsigned long period = 500;  //the value is a number of milliseconds
 
+// Pins for ultrasonic sensor
+const int trigPin = 12;
+const int echoPin = 14;
+
+float duration;
+float distance;
+
 /*
 WORKING MODES
 0 - CR_open
@@ -28,6 +35,10 @@ void setup() {
   Serial.begin(115200);
   while (!Serial);
   delay(2500);
+
+  // Set pin mode for ultrasonic sensor
+  pinMode(trigPin, OUTPUT); 
+  pinMode(echoPin, INPUT);
 
   if (!MKSServoCAN::begin(&bus)) {
     Serial.println("CAN init failed");
@@ -58,4 +69,24 @@ void loop() {
   if (currentMillis > 10000) {
     MKSServoCAN::enableMotor(MOTOR_ID, 0);
   }*/
+
+
+
+    // Clears the trigPin
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  // Sets the trigPin on HIGH state for 10 micro seconds
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  // Reads the echoPin, returns the sound wave travel time in microseconds
+  duration = pulseIn(echoPin, HIGH);
+  // Calculating the distance
+  distance = duration * 0.034 / 2.0;
+  // Prints the distance on the Serial Monitor
+  Serial.print("Distance: ");
+  Serial.println(distance);
+  delay(1000);
+  Serial.print("Calibrated distance: ");
+  Serial.println(distance*0.94133 - 0.015615);
 }
